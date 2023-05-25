@@ -215,14 +215,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
 
         self.assertAllClose(cirq_states, op_states, atol=1e-5, rtol=1e-5)
 
-    @parameterized.parameters(
-        list(
-            util.kwargs_cartesian_product(
-                **{
-                    'op_and_sim': [(op, sim)
-                                   for (op, sim) in zip(STATE_OPS, SIMS)],
-                    'n_qubits': [3, 7]
-                })))
+    @parameterized.parameters(list(util.kwargs_cartesian_product(**{'op_and_sim': list(zip(STATE_OPS, SIMS)), 'n_qubits': [3, 7]})))
     def test_simulate_state_no_symbols(self, op_and_sim, n_qubits):
         """Compute states using cirq and tfq without symbols."""
         op = op_and_sim[0]
@@ -238,16 +231,8 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
 
         self.assertAllClose(cirq_states, op_states, atol=1e-5, rtol=1e-5)
 
-    @parameterized.parameters(
-        list(
-            util.kwargs_cartesian_product(
-                **{
-                    'op_and_sim': [(op, sim)
-                                   for (op, sim) in zip(STATE_OPS, SIMS)],
-                    'n_qubits': [3, 7],
-                    'symbol_names': [['a'], ['a', 'b'],
-                                     ['a', 'b', 'c', 'd', 'e']]
-                })))
+    @parameterized.parameters(list(util.kwargs_cartesian_product(**{'op_and_sim': list(zip(STATE_OPS, SIMS)), 'n_qubits': [3, 7], 'symbol_names': [['a'], ['a', 'b'],
+                                     ['a', 'b', 'c', 'd', 'e']]})))
     def test_simulate_state_with_symbols(self, op_and_sim, n_qubits,
                                          symbol_names):
         """Compute states using cirq and tfq with symbols."""
@@ -255,7 +240,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
         sim = op_and_sim[1]
 
         circuit_batch, resolver_batch = \
-            util.random_symbol_circuit_resolver_batch(
+                util.random_symbol_circuit_resolver_batch(
                 cirq.GridQubit.rect(1, n_qubits), symbol_names, BATCH_SIZE)
 
         symbol_values_array = np.array(
@@ -271,21 +256,14 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
 
         self.assertAllClose(cirq_states, op_states, atol=1e-5, rtol=1e-5)
 
-    @parameterized.parameters(
-        list(
-            util.kwargs_cartesian_product(
-                **{
-                    'op_and_sim': [(op, sim) for (
-                        op,
-                        sim) in zip(STATE_OPS[:-2] +
-                                    [STATE_OPS[-1]], SIMS[:-2] + [SIMS[-1]])],
-                })))
+    @parameterized.parameters(list(util.kwargs_cartesian_product(**{'op_and_sim': list(zip(STATE_OPS[:-2] +
+                                    [STATE_OPS[-1]], SIMS[:-2] + [SIMS[-1]]))})))
     def test_simulate_state_large(self, op_and_sim):
         """Test a reasonably large and complex circuit."""
         op, sim = op_and_sim
         symbol_names = []
         circuit_batch, resolver_batch = \
-            util.random_circuit_resolver_batch(
+                util.random_circuit_resolver_batch(
                 cirq.GridQubit.rect(4, 4), 5)
 
         symbol_values_array = np.array(
@@ -301,11 +279,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
 
         self.assertAllClose(cirq_states, op_states, atol=1e-5, rtol=1e-5)
 
-    @parameterized.parameters(
-        list(
-            util.kwargs_cartesian_product(**{
-                'op_and_sim': [(op, sim) for (op, sim) in zip(STATE_OPS, SIMS)],
-            })))
+    @parameterized.parameters(list(util.kwargs_cartesian_product(**{'op_and_sim': list(zip(STATE_OPS, SIMS))})))
     def test_simulate_state_empty(self, op_and_sim):
         """Test empty circuits for states using cirq and tfq."""
         op = op_and_sim[0]
@@ -321,11 +295,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
 
         self.assertAllClose(cirq_states, op_states, atol=1e-5, rtol=1e-5)
 
-    @parameterized.parameters(
-        list(
-            util.kwargs_cartesian_product(**{
-                'op_and_sim': [(op, sim) for (op, sim) in zip(STATE_OPS, SIMS)]
-            })))
+    @parameterized.parameters(list(util.kwargs_cartesian_product(**{'op_and_sim': list(zip(STATE_OPS, SIMS))})))
     def test_simulate_state_no_circuits(self, op_and_sim):
         """Test no circuits for states using cirq and tfq."""
         op = op_and_sim[0]
@@ -338,16 +308,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
         cirq_states = batch_util.batch_calculate_state([], [], sim)
         self.assertEqual(op_states.shape, cirq_states.shape)
 
-    @parameterized.parameters(
-        list(
-            util.kwargs_cartesian_product(
-                **{
-                    'op_and_sim': [(op, sim)
-                                   for (op, sim) in zip(EXPECTATION_OPS, SIMS)],
-                    'n_qubits': [3, 7],
-                    'symbol_names': [['a', 'b', 'c', 'd', 'e']],
-                    'max_paulisum_length': [6]
-                })))
+    @parameterized.parameters(list(util.kwargs_cartesian_product(**{'op_and_sim': list(zip(EXPECTATION_OPS, SIMS)), 'n_qubits': [3, 7], 'symbol_names': [['a', 'b', 'c', 'd', 'e']], 'max_paulisum_length': [6]})))
     def test_analytical_expectation(self, op_and_sim, n_qubits, symbol_names,
                                     max_paulisum_length):
         """Compute expectations using cirq and tfq."""
@@ -356,7 +317,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
 
         qubits = cirq.LineQubit.range(n_qubits - 1) + [cirq.GridQubit(0, 0)]
         circuit_batch, resolver_batch = \
-            util.random_symbol_circuit_resolver_batch(
+                util.random_symbol_circuit_resolver_batch(
                 qubits, symbol_names, BATCH_SIZE)
 
         symbol_values_array = np.array(
@@ -380,16 +341,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
                             rtol=1e-5,
                             atol=1e-5)
 
-    @parameterized.parameters(
-        list(
-            util.kwargs_cartesian_product(
-                **{
-                    'op_and_sim': [(op, sim)
-                                   for (op, sim) in zip(EXPECTATION_OPS, SIMS)],
-                    'n_qubits': [3],
-                    'symbol_names': [['a', 'b', 'c', 'd', 'e']],
-                    'max_paulisum_length': [6]
-                })))
+    @parameterized.parameters(list(util.kwargs_cartesian_product(**{'op_and_sim': list(zip(EXPECTATION_OPS, SIMS)), 'n_qubits': [3], 'symbol_names': [['a', 'b', 'c', 'd', 'e']], 'max_paulisum_length': [6]})))
     def test_analytical_expectation_empty(self, op_and_sim, n_qubits,
                                           symbol_names, max_paulisum_length):
         """Test empty circuits for analytical expectation using cirq and tfq."""
@@ -419,13 +371,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
                             rtol=1e-5,
                             atol=1e-5)
 
-    @parameterized.parameters(
-        list(
-            util.kwargs_cartesian_product(
-                **{
-                    'op_and_sim': [(op, sim)
-                                   for (op, sim) in zip(EXPECTATION_OPS, SIMS)]
-                })))
+    @parameterized.parameters(list(util.kwargs_cartesian_product(**{'op_and_sim': list(zip(EXPECTATION_OPS, SIMS))})))
     def test_analytical_expectation_no_circuits(self, op_and_sim):
         """Test no circuits for states using cirq and tfq."""
         op = op_and_sim[0]
@@ -439,16 +385,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
         cirq_exp = batch_util.batch_calculate_expectation([], [], [[]], sim)
         self.assertEqual(op_exp.shape, cirq_exp.shape)
 
-    @parameterized.parameters(
-        list(
-            util.kwargs_cartesian_product(
-                **{
-                    'op_and_sim': [(op, sim) for (
-                        op, sim) in zip(SAMPLED_EXPECTATION_OPS, SIMS)],
-                    'n_qubits': [3, 7],
-                    'symbol_names': [['a', 'b', 'c', 'd', 'e']],
-                    'max_paulisum_length': [6]
-                })))
+    @parameterized.parameters(list(util.kwargs_cartesian_product(**{'op_and_sim': list(zip(SAMPLED_EXPECTATION_OPS, SIMS)), 'n_qubits': [3, 7], 'symbol_names': [['a', 'b', 'c', 'd', 'e']], 'max_paulisum_length': [6]})))
     def test_sampled_expectation(self, op_and_sim, n_qubits, symbol_names,
                                  max_paulisum_length):
         """Compute sampled expectations using cirq and tfq."""
@@ -457,7 +394,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
 
         qubits = cirq.GridQubit.rect(1, n_qubits)
         circuit_batch, resolver_batch = \
-            util.random_symbol_circuit_resolver_batch(
+                util.random_symbol_circuit_resolver_batch(
                 qubits, symbol_names, BATCH_SIZE)
 
         symbol_values_array = np.array(
@@ -484,16 +421,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
                             rtol=1e-1,
                             atol=1e-1)
 
-    @parameterized.parameters(
-        list(
-            util.kwargs_cartesian_product(
-                **{
-                    'op_and_sim': [(op, sim) for (
-                        op, sim) in zip(SAMPLED_EXPECTATION_OPS, SIMS)],
-                    'n_qubits': [3],
-                    'symbol_names': [['a', 'b', 'c', 'd', 'e']],
-                    'max_paulisum_length': [6]
-                })))
+    @parameterized.parameters(list(util.kwargs_cartesian_product(**{'op_and_sim': list(zip(SAMPLED_EXPECTATION_OPS, SIMS)), 'n_qubits': [3], 'symbol_names': [['a', 'b', 'c', 'd', 'e']], 'max_paulisum_length': [6]})))
     def test_sampled_expectation_empty(self, op_and_sim, n_qubits, symbol_names,
                                        max_paulisum_length):
         """Test empty circuits for sampled expectation using cirq and tfq."""
@@ -526,13 +454,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
                             rtol=1e-1,
                             atol=1e-1)
 
-    @parameterized.parameters(
-        list(
-            util.kwargs_cartesian_product(
-                **{
-                    'op_and_sim': [(op, sim) for (
-                        op, sim) in zip(SAMPLED_EXPECTATION_OPS, SIMS)]
-                })))
+    @parameterized.parameters(list(util.kwargs_cartesian_product(**{'op_and_sim': list(zip(SAMPLED_EXPECTATION_OPS, SIMS))})))
     def test_sampled_expectation_no_circuits(self, op_and_sim):
         """Test no circuits for states using cirq and tfq."""
         op = op_and_sim[0]
@@ -550,15 +472,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
         self.assertEqual(op_exp.shape, cirq_exp.shape)
 
     # keep the qubit count low here, all computations scale exponentially
-    @parameterized.parameters(
-        list(
-            util.kwargs_cartesian_product(
-                **{
-                    'op_and_sim': [(op, sim)
-                                   for (op, sim) in zip(SAMPLING_OPS, SIMS)],
-                    'n_qubits': [6],
-                    'symbol_names': [['a', 'b', 'c', 'd', 'e']]
-                })))
+    @parameterized.parameters(list(util.kwargs_cartesian_product(**{'op_and_sim': list(zip(SAMPLING_OPS, SIMS)), 'n_qubits': [6], 'symbol_names': [['a', 'b', 'c', 'd', 'e']]})))
     def test_sampling(self, op_and_sim, n_qubits, symbol_names):
         """Compare sampling with tfq ops and Cirq."""
         op = op_and_sim[0]
@@ -567,7 +481,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
         n_samples = int((2**n_qubits) * 1000)
 
         circuit_batch, resolver_batch = \
-            util.random_symbol_circuit_resolver_batch(
+                util.random_symbol_circuit_resolver_batch(
                 qubits, symbol_names, BATCH_SIZE, n_moments=30)
         for i in range(BATCH_SIZE):
             circuit_batch[i] += cirq.Circuit(
@@ -603,15 +517,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
             self.assertLess(stats.entropy(a + 1e-8, b + 1e-8), 0.005)
 
     # keep the qubit count low here, all computations scale exponentially
-    @parameterized.parameters(
-        list(
-            util.kwargs_cartesian_product(
-                **{
-                    'op_and_sim': [(op, sim)
-                                   for (op, sim) in zip(SAMPLING_OPS, SIMS)],
-                    'n_qubits': [3],
-                    'symbol_names': [['a', 'b', 'c', 'd', 'e']]
-                })))
+    @parameterized.parameters(list(util.kwargs_cartesian_product(**{'op_and_sim': list(zip(SAMPLING_OPS, SIMS)), 'n_qubits': [3], 'symbol_names': [['a', 'b', 'c', 'd', 'e']]})))
     def test_sampling_empty(self, op_and_sim, n_qubits, symbol_names):
         """Test empty circuits for sampling using cirq and tfq."""
         op = op_and_sim[0]
@@ -649,12 +555,7 @@ class ExecutionOpsConsistentyTest(tf.test.TestCase, parameterized.TestCase):
         for a, b in zip(op_histograms, cirq_histograms):
             self.assertLess(stats.entropy(a + 1e-8, b + 1e-8), 0.005)
 
-    @parameterized.parameters(
-        list(
-            util.kwargs_cartesian_product(**{
-                'op_and_sim': [(op, sim)
-                               for (op, sim) in zip(SAMPLING_OPS, SIMS)]
-            })))
+    @parameterized.parameters(list(util.kwargs_cartesian_product(**{'op_and_sim': list(zip(SAMPLING_OPS, SIMS))})))
     def test_sampling_no_circuits(self, op_and_sim):
         """Test no circuits for states using cirq and tfq."""
         op = op_and_sim[0]

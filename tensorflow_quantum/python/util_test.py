@@ -32,8 +32,7 @@ from tensorflow_quantum.python import util
 
 def _single_to_tensor(item):
     if not isinstance(item, (cirq.PauliSum, cirq.PauliString, cirq.Circuit)):
-        raise TypeError("Item must be a Circuit or PauliSum. Got {}.".format(
-            type(item)))
+        raise TypeError(f"Item must be a Circuit or PauliSum. Got {type(item)}.")
     if isinstance(item, (cirq.PauliSum, cirq.PauliString)):
         return serializer.serialize_paulisum(item).SerializeToString(
             deterministic=True)
@@ -516,9 +515,7 @@ class ExponentialUtilFunctionsTest(tf.test.TestCase):
 
         result_gates = []
         for moment in circuit:
-            for gate_op in moment:
-                result_gates.append(gate_op.gate)
-
+            result_gates.extend(gate_op.gate for gate_op in moment)
         # Because it has no qubit in the total circuit, the default is set to
         # zeroth qubit.
         self.assertEqual(circuit.all_qubits(), frozenset({cirq.GridQubit(0,
@@ -544,9 +541,7 @@ class ExponentialUtilFunctionsTest(tf.test.TestCase):
 
         result_gates = []
         for moment in circuit:
-            for gate_op in moment:
-                result_gates.append(gate_op)
-
+            result_gates.extend(iter(moment))
         self.assertIsInstance(result_gates[0].gate, cirq.CNotPowGate)
         self.assertIsInstance(result_gates[1].gate, cirq.ZPowGate)
         self.assertIsInstance(result_gates[2].gate, cirq.CNotPowGate)
